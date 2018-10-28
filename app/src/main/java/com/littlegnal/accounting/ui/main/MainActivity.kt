@@ -28,7 +28,7 @@ import androidx.recyclerview.widget.RecyclerView
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import com.jakewharton.rxbinding2.support.v7.widget.RxRecyclerView
+import com.jakewharton.rxbinding3.recyclerview.scrollStateChanges
 import com.littlegnal.accounting.R
 import com.littlegnal.accounting.base.BaseActivity
 import com.littlegnal.accounting.base.DefaultItemDecoration
@@ -154,7 +154,7 @@ class MainActivity : BaseActivity(), MviView<MainIntent, MainViewState> {
   private fun initialIntent(): Observable<MainIntent> = Observable.just(MainIntent.InitialIntent())
 
   private fun loadNextPageIntent(): Observable<MainIntent> {
-    return RxRecyclerView.scrollStateChanges(rv_main_detail)
+    return rv_main_detail.scrollStateChanges()
         .filter { !accountingDetailController.isNoMoreData }
         .filter { !accountingDetailController.isLoadingMore }
         .filter { it == RecyclerView.SCROLL_STATE_IDLE }
