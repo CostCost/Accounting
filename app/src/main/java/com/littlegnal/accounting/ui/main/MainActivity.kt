@@ -40,6 +40,7 @@ import com.littlegnal.accounting.ui.main.adapter.MainAccountingDetailContent
 import com.littlegnal.accounting.ui.main.adapter.MainAccountingDetailController
 import com.littlegnal.accounting.ui.main.adapter.MainAccountingDetailHeaderModel
 import com.littlegnal.accounting.ui.summary.SummaryActivity
+import com.littlegnal.accounting.ui.summary.SummaryFragment
 import com.littlegnal.accounting.ui.summary.SummaryMvRxViewModel
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -83,7 +84,13 @@ class MainActivity : BaseActivity(), MviView<MainIntent, MainViewState> {
 
     toolbar.setOnMenuItemClickListener {
       if (it?.itemId == R.id.menu_summary) {
-        SummaryActivity.go(this)
+//        SummaryActivity.go(this)
+
+        supportFragmentManager.beginTransaction()
+            .add(R.id.content, SummaryFragment(), "summary_fragment")
+            .addToBackStack("back_stack")
+            .commit()
+
         return@setOnMenuItemClickListener true
       }
       return@setOnMenuItemClickListener false
