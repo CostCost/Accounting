@@ -18,19 +18,21 @@ package com.littlegnal.accounting.ui.summary
 
 import androidx.lifecycle.ViewModel
 import com.littlegnal.accounting.di.ViewModelKey
+import com.squareup.inject.assisted.dagger2.AssistedModule
 import dagger.Binds
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 import dagger.multibindings.IntoMap
 
-@Module(includes = [SummaryModule::class])
+@AssistedModule
+@Module(includes = [AssistedInject_SummaryBuilderModule::class])
 abstract class SummaryBuilderModule {
 
   @ContributesAndroidInjector
   abstract fun contributeSummaryActivity(): SummaryActivity
 
-  @Binds
-  @IntoMap
-  @ViewModelKey(SummaryViewModel::class)
-  abstract fun bindSummaryViewModel(summaryViewModel: SummaryViewModel): ViewModel
+//  @Binds
+//  @IntoMap
+//  @ViewModelKey(SummaryViewModel::class)
+//  abstract fun bindSummaryViewModel(summaryViewModel: SummaryViewModel): ViewModel
 }

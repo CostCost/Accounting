@@ -40,6 +40,7 @@ import com.littlegnal.accounting.ui.main.adapter.MainAccountingDetailContent
 import com.littlegnal.accounting.ui.main.adapter.MainAccountingDetailController
 import com.littlegnal.accounting.ui.main.adapter.MainAccountingDetailHeaderModel
 import com.littlegnal.accounting.ui.summary.SummaryActivity
+import com.littlegnal.accounting.ui.summary.SummaryMvRxViewModel
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -54,6 +55,8 @@ import javax.inject.Inject
  * 主页，按每天来分组记帐记录，展示记帐记录列表
  */
 class MainActivity : BaseActivity(), MviView<MainIntent, MainViewState> {
+
+  @Inject lateinit var summaryMvRxViewModelFactory: SummaryMvRxViewModel.Factory
 
   @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
   private lateinit var mainViewModel: MainViewModel

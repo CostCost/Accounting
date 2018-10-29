@@ -20,6 +20,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.RoomWarnings
 import io.reactivex.Maybe
 import java.util.Date
 
@@ -70,6 +71,7 @@ interface AccountingDao {
     month: String
   ): Maybe<List<TagAndTotal>>
 
+  @Deprecated("This will no long used")
   @Query(
       """
     SELECT SUM(amount) as total, tag_name
@@ -83,6 +85,18 @@ interface AccountingDao {
     year: String,
     month: String
   ): List<TagAndTotal>
+
+  @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+  @Query(
+      """
+    SELECT SUM(amount) as total, tag_name, strftime('%Y-%m', createTime / 1000, 'unixepoch') year_month
+    FROM accounting
+    GROUP BY tag_name
+    ORDER BY year_month DESC
+    LIMIT 1
+    """
+  )
+  fun getLastGroupingMonthTotalAmountObservable(): Maybe<List<TagAndTotal>>
 
   @Query(
       """

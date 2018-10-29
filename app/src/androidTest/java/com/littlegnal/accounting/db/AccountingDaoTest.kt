@@ -224,6 +224,35 @@ class AccountingDaoTest {
   }
 
   @Test
+  fun test_getLastGroupingMonthTotalAmountObservable() {
+    val today = Calendar.getInstance()
+    val calendar = Calendar.getInstance().apply { set(Calendar.MONTH, -1) }
+    val account1 = Accounting(
+        100.0f,
+        today.time,
+        "早餐",
+        "100块的茶叶蛋")
+    calendar.add(Calendar.HOUR_OF_DAY, -1)
+    val account2 = Accounting(
+        100.0f,
+        calendar.time,
+        "午餐",
+        "100块的鸭腿")
+    accountingDao.insertAccounting(account1)
+    accountingDao.insertAccounting(account2)
+
+    val tagTotal1 = TagAndTotal("早餐", 100.0f)
+
+    accountingDao.getLastGroupingMonthTotalAmountObservable()
+        .test()
+        .assertValue {
+          it.size == 1 &&
+              it[0].tagName == tagTotal1.tagName &&
+              it[0].total == tagTotal1.total
+        }
+  }
+
+  @Test
   fun test_getMonthTotalAmount() {
     val calendar = Calendar.getInstance()
     val yearMonthFormat1 = YEAR_MONTH_FORMAT.format(calendar.time)

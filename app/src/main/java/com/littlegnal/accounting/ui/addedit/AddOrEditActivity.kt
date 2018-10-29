@@ -19,12 +19,12 @@ package com.littlegnal.accounting.ui.addedit
 import android.app.Activity
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.os.Bundle
-import com.jakewharton.rxbinding2.view.RxView
-import com.jakewharton.rxbinding2.widget.RxTextView
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
+import com.jakewharton.rxbinding3.view.clicks
+import com.jakewharton.rxbinding3.widget.textChanges
 import com.littlegnal.accounting.R
 import com.littlegnal.accounting.base.BaseActivity
 import com.littlegnal.accounting.base.mvi.MviIntent
@@ -90,11 +90,11 @@ class AddOrEditActivity : BaseActivity(), MviView<AddOrEditIntent, AddOrEditView
       return@setOnTouchListener false
     }
 
-    saveOrUpdateConfirmObservable = RxView.clicks(btn_add_or_edit_confirm)
+    saveOrUpdateConfirmObservable = btn_add_or_edit_confirm.clicks()
         .throttleFirst(300, TimeUnit.MILLISECONDS)
         .map { true }
 
-    inputPayObservable = RxTextView.textChanges(et_add_or_edit_pay_value)
+    inputPayObservable = et_add_or_edit_pay_value.textChanges()
         .map { it.toString() }
         .share()
 
@@ -138,7 +138,7 @@ class AddOrEditActivity : BaseActivity(), MviView<AddOrEditIntent, AddOrEditView
   }
 
   private fun createOrUpdateIntent(): Observable<AddOrEditIntent> =
-    RxView.clicks(btn_add_or_edit_confirm)
+      btn_add_or_edit_confirm.clicks()
         .throttleFirst(300, TimeUnit.MILLISECONDS)
         .map {
           AddOrEditIntent.CreateOrUpdateIntent(
