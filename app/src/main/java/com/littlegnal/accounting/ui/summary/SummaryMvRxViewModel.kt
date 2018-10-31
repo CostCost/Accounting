@@ -14,6 +14,7 @@ import com.littlegnal.accounting.R
 import com.littlegnal.accounting.db.AccountingDao
 import com.littlegnal.accounting.db.TagAndTotal
 import com.littlegnal.accounting.ui.main.MainActivity
+import com.littlegnal.accounting.ui.main.NewMainActivity
 import com.littlegnal.accounting.ui.summary.adapter.SummaryListItem
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
@@ -187,7 +188,7 @@ class SummaryMvRxViewModel @AssistedInject constructor(
       activity: FragmentActivity,
       state: SummaryMvRxViewState
     ): BaseMvRxViewModel<SummaryMvRxViewState> {
-      return (activity as MainActivity).summaryMvRxViewModelFactory.create(state)
+      return (activity as NewMainActivity).summaryMvRxViewModelFactory.create(state)
     }
 
   }

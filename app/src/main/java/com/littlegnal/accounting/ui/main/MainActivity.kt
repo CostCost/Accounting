@@ -58,6 +58,7 @@ import javax.inject.Inject
 class MainActivity : BaseActivity(), MviView<MainIntent, MainViewState> {
 
   @Inject lateinit var summaryMvRxViewModelFactory: SummaryMvRxViewModel.Factory
+  @Inject lateinit var mainMvRxViewModelFactory: MainMvRxViewModel.Factory
 
   @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
   private lateinit var mainViewModel: MainViewModel

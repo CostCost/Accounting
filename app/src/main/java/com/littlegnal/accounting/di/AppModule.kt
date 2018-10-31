@@ -28,6 +28,7 @@ import com.littlegnal.accounting.db.AccountingDao
 import com.littlegnal.accounting.db.AppDataBase
 import com.littlegnal.accounting.ui.addedit.AddOrEditBuilderModule
 import com.littlegnal.accounting.ui.main.MainBuilderModule
+import com.littlegnal.accounting.ui.main.MainMvRxViewModelModule
 import com.littlegnal.accounting.ui.summary.SummaryBuilderModule
 import dagger.Module
 import dagger.Provides
@@ -39,7 +40,8 @@ import javax.inject.Singleton
       ViewModelModule::class,
       AddOrEditBuilderModule::class,
       SummaryBuilderModule::class,
-      MainBuilderModule::class
+      MainBuilderModule::class,
+      MainMvRxViewModelModule::class
     ]
 )
 class AppModule {

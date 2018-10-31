@@ -29,8 +29,11 @@ abstract class MainBuilderModule {
   @ContributesAndroidInjector
   abstract fun contributeMainActivity(): MainActivity
 
-  @Binds
-  @IntoMap
-  @ViewModelKey(MainViewModel::class)
-  abstract fun bindMainViewModel(mainViewModel: MainViewModel): ViewModel
+  @ContributesAndroidInjector
+  abstract fun contributeNewMainActivity(): NewMainActivity
+
+//  @Binds
+//  @IntoMap
+//  @ViewModelKey(MainViewModel::class)
+//  abstract fun bindMainViewModel(mainViewModel: MainViewModel): ViewModel
 }

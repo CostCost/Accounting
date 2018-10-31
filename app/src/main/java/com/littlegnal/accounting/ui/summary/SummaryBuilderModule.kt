@@ -24,8 +24,7 @@ import dagger.Module
 import dagger.android.ContributesAndroidInjector
 import dagger.multibindings.IntoMap
 
-@AssistedModule
-@Module(includes = [AssistedInject_SummaryBuilderModule::class])
+@Module()
 abstract class SummaryBuilderModule {
 
   @ContributesAndroidInjector
