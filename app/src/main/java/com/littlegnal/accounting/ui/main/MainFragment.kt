@@ -15,6 +15,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.airbnb.mvrx.BaseMvRxFragment
+import com.airbnb.mvrx.MvRx
 import com.airbnb.mvrx.activityViewModel
 import com.airbnb.mvrx.withState
 import com.littlegnal.accounting.R
@@ -22,6 +23,7 @@ import com.littlegnal.accounting.base.DefaultItemDecoration
 import com.littlegnal.accounting.base.util.plusAssign
 import com.littlegnal.accounting.base.util.toast
 import com.littlegnal.accounting.ui.addedit.AddOrEditActivity
+import com.littlegnal.accounting.ui.addedit.AddOrEditFragment
 import com.littlegnal.accounting.ui.main.adapter.MainAccountingDetailController
 import com.littlegnal.accounting.ui.main.adapter.MainAccountingDetailHeaderModel
 import com.littlegnal.accounting.ui.summary.SummaryFragment
@@ -48,11 +50,11 @@ class MainFragment : BaseMvRxFragment() {
   private val deleteItemPublisher: PublishSubject<Int> = PublishSubject.create()
 
   override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-    setHasOptionsMenu(true)
     return inflater.inflate(R.layout.fragment_main, container, false)
   }
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    setHasOptionsMenu(true)
     super.onViewCreated(view, savedInstanceState)
 
     val adapter = accountingDetailController.adapter
@@ -80,14 +82,30 @@ class MainFragment : BaseMvRxFragment() {
     }
 
     fab_main_add_accounting.setOnClickListener {
-//      AddOrEditActivity.add(this)
+      activity?.supportFragmentManager?.beginTransaction()
+          ?.add(
+              R.id.content,
+              AddOrEditFragment().apply {
+                arguments = Bundle().apply { putInt(MvRx.KEY_ARG, -1) }
+              },
+              "add_or_edit_fragment")
+          ?.addToBackStack("back_stack")
+          ?.commit()
     }
 
     disposables += accountingDetailController.getItemClickObservable()
         .throttleFirst(300, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe {
-//          AddOrEditActivity.edit(a, it)
+          activity?.supportFragmentManager?.beginTransaction()
+              ?.add(
+                  R.id.content,
+                  AddOrEditFragment().apply {
+                    arguments = Bundle().apply { putInt(MvRx.KEY_ARG, it) }
+                  },
+                  "add_or_edit_fragment")
+              ?.addToBackStack("back_stack")
+              ?.commit()
         }
 
     disposables += accountingDetailController.getItemLongClickObservable()
@@ -96,7 +114,9 @@ class MainFragment : BaseMvRxFragment() {
           val tag = "DeleteConfirmDialog"
           val dialog: DialogFragment = DeleteConfirmDialog().apply {
             okClickListener = DialogInterface.OnClickListener { _, _ ->
-              deleteItemPublisher.onNext(id)
+              withState(mainMvRxViewModel) {
+                mainMvRxViewModel.deleteAccounting(it.accountingDetailList, id)
+              }
             }
           }
           val ft = activity?.supportFragmentManager?.beginTransaction()
@@ -117,13 +137,13 @@ class MainFragment : BaseMvRxFragment() {
     val menuItem: MenuItem? = menu?.findItem(R.id.menu_summary)
     withState(mainMvRxViewModel) {
       val isMenuEnabled = it.accountingDetailList.isNotEmpty()
-      if ((menuItem?.isEnabled!! && !isMenuEnabled) || (!menuItem.isEnabled && isMenuEnabled)) {
+      if (menuItem?.isEnabled != isMenuEnabled) {
         val resIcon: Drawable? = resources.getDrawable(R.drawable.ic_show_chart_black_24dp, activity?.theme)
         if (!isMenuEnabled)
           resIcon?.mutate()?.setColorFilter(0xff888888.toInt(), PorterDuff.Mode.SRC_IN)
 
-        menuItem.isEnabled = isMenuEnabled
-        menuItem.icon = resIcon
+        menuItem?.isEnabled = isMenuEnabled
+        menuItem?.icon = resIcon
       }
     }
   }

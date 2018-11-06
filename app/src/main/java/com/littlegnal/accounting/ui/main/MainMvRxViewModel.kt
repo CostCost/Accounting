@@ -40,6 +40,8 @@ class MainMvRxViewModel @AssistedInject constructor(
   private val oneDayFormat: SimpleDateFormat = SimpleDateFormat("yyyy-MM-dd")
   @SuppressLint("SimpleDateFormat")
   private val timeFormat: SimpleDateFormat = SimpleDateFormat("HH:mm")
+  @SuppressLint("SimpleDateFormat")
+  private val dateTimeFormat = SimpleDateFormat("yyyy/MM/dd HH:mm")
 
   init {
       loadList(lastDate = Calendar.getInstance().time)
@@ -175,6 +177,131 @@ class MainMvRxViewModel @AssistedInject constructor(
         timeFormat.format(accounting.createTime),
         accounting.createTime
     )
+  }
+
+  fun addOrEditAccounting(
+    accountingDetailList: List<MainAccountingDetail>,
+    accountingId: Int,
+    amount: Float,
+    tagName: String,
+    showDate: String,
+    remarks: String?
+  ) {
+    if (accountingId == -1) {
+      addAccounting(accountingDetailList, amount, tagName, showDate, remarks)
+    } else {
+      updateAccounting(accountingDetailList, accountingId, amount, tagName, showDate, remarks)
+    }
+  }
+
+  private fun addAccounting(
+    accountingDetailList: List<MainAccountingDetail>,
+    amount: Float,
+    tagName: String,
+    showDate: String,
+    remarks: String?
+  ) {
+    Observable.fromCallable {
+      val accounting = Accounting(
+          amount,
+          dateTimeFormat.parse(showDate),
+          tagName,
+          remarks
+      )
+      val insertedId = accountingDao.insertAccounting(accounting)
+      accounting.id = insertedId.toInt()
+      val newContent = createDetailContent(accounting)
+      val newAccountingList = accountingDetailList.toMutableList()
+      if (newAccountingList.isEmpty()) {
+        newAccountingList.add(createHeader(accounting.createTime))
+        newAccountingList.add(newContent)
+      } else {
+        val title: String = createHeaderTitle(accounting.createTime)
+        val header: MainAccountingDetailHeader =
+            newAccountingList[0] as MainAccountingDetailHeader
+
+        newAccountingList.indexOfFirst {
+          it is MainAccountingDetailContent &&
+              it.createTime <= accounting.createTime
+        }
+            .apply {
+              // index为-1时表示找到了最后，所以下标直接赋值为newAccountingList.size
+              val insertIndex = if (this == -1) newAccountingList.size else this
+              if (title == header.title) {
+                newAccountingList.add(insertIndex, newContent)
+              } else {
+                val addedHeader = createHeader(accounting.createTime)
+                newAccountingList.add(insertIndex, newContent)
+                newAccountingList.add(insertIndex, addedHeader)
+              }
+            }
+      }
+      newAccountingList
+    }
+    .subscribeOn(Schedulers.io())
+    .execute {
+      when (it) {
+        is Loading -> {
+          copy(error = null, isLoading = true)
+        }
+        is Fail -> {
+          copy(error = it.error, isLoading = false)
+        }
+        is Success -> {
+          copy(accountingDetailList = it()!!, isLoading = false, error = null)
+        }
+        else -> { copy() }
+      }
+    }
+  }
+
+  private fun updateAccounting(
+    accountingDetailList: List<MainAccountingDetail>,
+    accountingId: Int,
+    amount: Float,
+    tagName: String,
+    showDate: String,
+    remarks: String?
+  ) {
+    Observable.fromCallable {
+      val accounting = Accounting(
+          amount,
+          dateTimeFormat.parse(showDate),
+          tagName,
+          remarks
+      ).apply { id = accountingId }
+      accountingDao.insertAccounting(accounting)
+      val newContent = createDetailContent(accounting)
+      val newAccountingList = accountingDetailList.toMutableList()
+      val oldContent = newAccountingList
+          .filter { it is MainAccountingDetailContent }
+          .map { it as MainAccountingDetailContent }
+          .find { it.id == newContent.id }
+
+      oldContent?.apply {
+        newAccountingList.indexOf(oldContent)
+            .apply {
+              findAndUpdateHeader(newAccountingList, this)
+              newAccountingList[this] = newContent
+            }
+      }
+      newAccountingList
+    }
+    .subscribeOn(Schedulers.io())
+    .execute {
+      when (it) {
+        is Loading -> {
+          copy(isLoading = true, error = null)
+        }
+        is Fail -> {
+          copy(isLoading = false, error = it.error)
+        }
+        is Success -> {
+          copy(isLoading = false, error = null, accountingDetailList = it()!!)
+        }
+        else -> { copy() }
+      }
+    }
   }
 
   fun deleteAccounting(accountingDetailList: List<MainAccountingDetail>, deletedId: Int) {
