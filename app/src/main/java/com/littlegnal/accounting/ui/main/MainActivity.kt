@@ -83,19 +83,19 @@ class MainActivity : BaseActivity(), MviView<MainIntent, MainViewState> {
     rv_main_detail.addItemDecoration(
         DefaultItemDecoration(adapter) { it !is MainAccountingDetailHeaderModel })
 
-    toolbar.setOnMenuItemClickListener {
-      if (it?.itemId == R.id.menu_summary) {
-//        SummaryActivity.go(this)
-
-        supportFragmentManager.beginTransaction()
-            .add(R.id.content, SummaryFragment(), "summary_fragment")
-            .addToBackStack("back_stack")
-            .commit()
-
-        return@setOnMenuItemClickListener true
-      }
-      return@setOnMenuItemClickListener false
-    }
+//    toolbar.setOnMenuItemClickListener {
+//      if (it?.itemId == R.id.menu_summary) {
+////        SummaryActivity.go(this)
+//
+//        supportFragmentManager.beginTransaction()
+//            .add(R.id.content, SummaryFragment(), "summary_fragment")
+//            .addToBackStack("back_stack")
+//            .commit()
+//
+//        return@setOnMenuItemClickListener true
+//      }
+//      return@setOnMenuItemClickListener false
+//    }
 
     fab_main_add_accounting.setOnClickListener { AddOrEditActivity.add(this) }
 
@@ -138,17 +138,17 @@ class MainActivity : BaseActivity(), MviView<MainIntent, MainViewState> {
   }
 
   override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
-    val menuItem: MenuItem? = menu?.findItem(R.id.menu_summary)
-    val isMenuEnabled = accountingDetailController.accountingDetailList.isNotEmpty()
-    if ((menuItem?.isEnabled!! && !isMenuEnabled) || (!menuItem.isEnabled && isMenuEnabled)) {
-      val resIcon: Drawable? = resources?.getDrawable(R.drawable.ic_show_chart_black_24dp, theme)
-      if (!isMenuEnabled)
-        resIcon?.mutate()?.setColorFilter(0xff888888.toInt(), PorterDuff.Mode.SRC_IN)
-
-      menuItem.isEnabled = isMenuEnabled
-      menuItem.icon = resIcon
-      return true
-    }
+//    val menuItem: MenuItem? = menu?.findItem(R.id.menu_summary)
+//    val isMenuEnabled = accountingDetailController.accountingDetailList.isNotEmpty()
+//    if ((menuItem?.isEnabled!! && !isMenuEnabled) || (!menuItem.isEnabled && isMenuEnabled)) {
+//      val resIcon: Drawable? = resources?.getDrawable(R.drawable.ic_show_chart_black_24dp, theme)
+//      if (!isMenuEnabled)
+//        resIcon?.mutate()?.setColorFilter(0xff888888.toInt(), PorterDuff.Mode.SRC_IN)
+//
+//      menuItem.isEnabled = isMenuEnabled
+//      menuItem.icon = resIcon
+//      return true
+//    }
 
     return super.onPrepareOptionsMenu(menu)
   }

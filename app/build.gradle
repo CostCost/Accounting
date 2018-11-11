@@ -130,4 +130,7 @@ dependencies {
 
   compileOnly 'com.squareup.inject:assisted-inject-annotations-dagger2:0.3.0'
   kapt 'com.squareup.inject:assisted-inject-processor-dagger2:0.3.0'
+
+  implementation "android.arch.navigation:navigation-fragment-ktx:1.0.0-alpha07"
+  implementation "android.arch.navigation:navigation-ui-ktx:1.0.0-alpha07"
 }

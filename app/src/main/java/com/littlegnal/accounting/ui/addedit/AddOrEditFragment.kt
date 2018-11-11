@@ -9,6 +9,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
+import androidx.navigation.NavOptions
+import androidx.navigation.fragment.findNavController
 import com.airbnb.mvrx.BaseMvRxFragment
 import com.airbnb.mvrx.activityViewModel
 import com.airbnb.mvrx.args
@@ -20,6 +22,7 @@ import com.littlegnal.accounting.R
 import com.littlegnal.accounting.base.util.plusAssign
 import com.littlegnal.accounting.base.util.toast
 import com.littlegnal.accounting.ui.main.MainMvRxViewModel
+import com.littlegnal.accounting.ui.main.NewMainActivity
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -59,13 +62,21 @@ class AddOrEditFragment : BaseMvRxFragment() {
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
 
-//    title = accountingId?.let { getString(R.string.add_or_edit_edit_title) }
-//        ?: getString(R.string.add_or_edit_add_title)
+    val title = if (accountingId != -1) {
+      getString(R.string.add_or_edit_edit_title)
+    } else {
+      getString(R.string.add_or_edit_add_title)
+    }
+//    (activity as NewMainActivity).updateTitle(title)
+
+//    findNavController().currentDestination?.label = title
 
     tv_add_or_edit_date_value.setOnClickListener {
       hideSoftKeyboard()
       datePicker()
     }
+
+//    findNavController().navigate()
 
     sv_add_or_edit.setOnTouchListener { _, _ ->
       hideSoftKeyboard()
@@ -181,5 +192,11 @@ class AddOrEditFragment : BaseMvRxFragment() {
       }
       state.remarks?.apply { et_add_or_edit_remarks.setText(this) }
     }
+  }
+
+  override fun onDestroyView() {
+    super.onDestroyView()
+
+    disposables.dispose()
   }
 }
