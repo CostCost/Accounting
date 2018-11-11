@@ -241,11 +241,11 @@ class MainFragment : BaseFragment() {
 
               }
               longClickListener { _, _, _, position ->
-//                val clickContent = accountingDetailList[position] as MainAccountingDetailContent
+                val clickContent = this@apply[position] as MainAccountingDetailContent
 //                itemLongClickPublisher.onNext(clickContent.id)
 
 
-                showConfirmDeleteDialog()
+                showConfirmDeleteDialog(clickContent.id)
 
                 return@longClickListener true
               }
@@ -259,12 +259,12 @@ class MainFragment : BaseFragment() {
       if (state.isLoading) mainAccountingDetailLoading { id("loading") }
     }
 
-  private fun showConfirmDeleteDialog() {
+  private fun showConfirmDeleteDialog(deleteId: Int) {
     val tag = "DeleteConfirmDialog"
     val dialog: DialogFragment = DeleteConfirmDialog().apply {
       okClickListener = DialogInterface.OnClickListener { _, _ ->
         withState(mainMvRxViewModel) {
-          mainMvRxViewModel.deleteAccounting(it.accountingDetailList, id)
+          mainMvRxViewModel.deleteAccounting(it.accountingDetailList, deleteId)
         }
       }
     }
